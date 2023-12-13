@@ -21,4 +21,6 @@ jobs:
         run: npm run build
 
       - name: Start/Reload PM2
-        run: ~/projects pm2 start ecosystem.config.js
+        run: |
+          cd ~/projects
+          pm2 start ecosystem.config.js
