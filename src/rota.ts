@@ -6,7 +6,7 @@ const router = Router()
 
 export default function (io: SocketServer) {
   try {
-    router.get('/', (_, res) => (res.status(200).send('Socket Server Online')))
+    router.get('/', (_, res) => (res.sendStatus(200)))
     
     router.use(verificaJWT, (req, res) => {
       try {
