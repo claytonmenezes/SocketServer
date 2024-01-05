@@ -11,7 +11,7 @@ export default function (io: SocketServer) {
     router.use(verificaClerk, (req, res) => {
       try {
         const nomeMetodo = req.url.split('?')[0]?.substring(1)
-        const usuariosFiltrados = server.sessions?.filter(u => u.sessionId === req.query?.usuarioId)
+        const usuariosFiltrados = server.clients?.filter(u => u.userId === req.query?.userId)
         if (usuariosFiltrados.length) {
           for (const usuario of usuariosFiltrados) {
             io.to(usuario.socketId).emit(nomeMetodo, req.body)
