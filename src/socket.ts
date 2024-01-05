@@ -1,32 +1,31 @@
 import { Server as SocketServer } from 'socket.io'
 import { Server } from 'http'
-import { sessions } from '@clerk/clerk-sdk-node'
+import { sessions as sessionClerk } from '@clerk/clerk-sdk-node'
 
-const clients: {socketId: string, userId: string}[] = []
+const sessions: {socketId: string, sessionId: string}[] = []
 
 export default {
-  clients,
+  sessions,
   createSocket (httpServer: Server) {
     try {
       const io = new SocketServer(httpServer, { cors: { origin: '*' } })
-      this.clients = []
+      this.sessions = []
       io.on('connection', (socket) => {
-        socket.on('register', async (message: {socketId: string, userId: string}) => {
-          if (this.clients.some(s => s.userId === message.userId && s.socketId === message.socketId)) return
-          const sessionsList = await sessions.getSessionList()
-          let session = sessionsList.find(s => s.userId === message.userId)
-          if (session && (session.expireAt <= new Date().getTime() || session.status !== 'active')) {
+        socket.on('register', async (message: {socketId: string, sessionId: string}) => {
+          if (this.sessions.some(s => s.sessionId === message.sessionId && s.socketId === message.socketId)) return
+          const session = await sessionClerk.getSession(message.sessionId)
+          if (session.status !== 'active') {
             io.to(message.socketId).emit('error', {message: 'Sessão inválida'})
           }
           else {
-            this.clients.push(message)
-            console.log(`sessionId: ${message.userId} registrado`)
+            this.sessions.push(message)
+            console.log(`sessionId: ${message.sessionId} registrado`)
           }
         })
         socket.on('disconnect', () => {
-          const index = this.clients.findIndex(u => u.socketId === socket.id)
-          const session = this.clients.splice(index, 1)
-          console.log(`sessionId: ${session[0].userId} removido`)
+          const index = this.sessions.findIndex(u => u.socketId === socket.id)
+          const session = this.sessions.splice(index, 1)
+          console.log(`sessionId: ${session[0].sessionId} removido`)
         })
       })
       return io
