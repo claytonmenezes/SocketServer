@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express"
 import { sessions } from '@clerk/clerk-sdk-node'
 
-const verificaJWT = async (req: Request, res: Response, next: NextFunction) => {
+const verificaClerk = async (req: Request, res: Response, next: NextFunction) => {
   const sessionId = req.query.sessionId as string
   if (!sessionId) return res.status(401).send({message: 'Não autorizado'})
   const session = await sessions.getSession(sessionId)
@@ -10,4 +10,4 @@ const verificaJWT = async (req: Request, res: Response, next: NextFunction) => {
   }
   return next()
 }
-export {verificaJWT}
+export {verificaClerk}
