@@ -5,6 +5,7 @@ import rota from './src/rota'
 import socket from './src/socket'
 
 const app = express()
+
 app.use(cors({
   origin: '*'
 }))
