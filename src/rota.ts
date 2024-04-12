@@ -7,7 +7,7 @@ const router = Router()
 export default function (io: SocketServer) {
   try {
     router.get('/', (_, res) => (res.sendStatus(200)))
-    
+
     router.use(verificaClerk, (req, res) => {
       try {
         const nomeMetodo = req.url.split('?')[0]?.substring(1)
